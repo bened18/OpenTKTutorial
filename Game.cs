@@ -55,10 +55,7 @@ namespace HelloTriangle
             ebo = GL.GenBuffer();
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, ebo);
             GL.BufferData(BufferTarget.ElementArrayBuffer, indices.Length * sizeof(uint), indices, BufferUsageHint.StaticDraw);
-            
-            
 
-        
         }
 
         protected override void OnRenderFrame(FrameEventArgs e)
@@ -69,7 +66,14 @@ namespace HelloTriangle
 
             //Code goes here
             shader.Use();
+            // update color
+            int vertexColorLocation = shader.GetUniformLocation("rectangleColor");
+            GL.Uniform4(vertexColorLocation, 0.2f, 0.0f, 1.0f, 1.0f);
+
+            //Bind the vao
             GL.BindVertexArray(vao);
+            
+            //Draw the triangles
             //GL.DrawArrays(PrimitiveType.Triangles, 0, 3);
             GL.DrawElements(PrimitiveType.Triangles, indices.Length, DrawElementsType.UnsignedInt, 0);
 
