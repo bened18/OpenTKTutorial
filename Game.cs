@@ -1,3 +1,5 @@
+using System.Drawing;
+using System.Runtime.InteropServices;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
@@ -15,7 +17,10 @@ namespace HelloTriangle
             {
                 ClientSize = (width, height), Title = title
             }
-        ){}
+        ){
+            screnwidth = width;
+            screenheight = height;
+        }
 
         // -- Vertex Input
         float[] vertices =
@@ -31,12 +36,18 @@ namespace HelloTriangle
             0, 1, 3,   // first triangle
             1, 2, 3    // second triangle
         };
+        int screnwidth;
+        int screenheight;
         int vbo;
         int vao;
         int ebo;
         Shader shader;
         Texture texture;
         Texture texture2;
+        Matrix4 model;
+        Matrix4 view;
+        Matrix4 projection;
+
 
         protected override void OnLoad()
         {
@@ -82,18 +93,25 @@ namespace HelloTriangle
             shader.SetInt("texture1", 1);
             
 
-            
-
             // color vertices for a triangle
             //GL.VertexAttribPointer(1, 3, VertexAttribPointerType.Float, false, 6 * sizeof(float), 3 * sizeof(float));
             //GL.EnableVertexAttribArray(1);
 
             // Transformation matrix
-            Matrix4 rotation = Matrix4.CreateRotationZ(MathHelper.DegreesToRadians(90.0f));
-            Matrix4 scale = Matrix4.CreateScale(0.5f, 0.5f, 0.5f);
-            Matrix4 trans = rotation * scale;
+            //Matrix4 rotation = Matrix4.CreateRotationZ(MathHelper.DegreesToRadians(90.0f));
+            //Matrix4 scale = Matrix4.CreateScale(0.5f, 0.5f, 0.5f);
+            //Matrix4 trans = rotation * scale;
             //sent the matrix to the vertex shader
-            shader.SetMatrix4("transform", trans);
+            //shader.SetMatrix4("transform", trans);
+
+            // -- Transformation
+            model = Matrix4.CreateRotationX(MathHelper.DegreesToRadians(-55.0f));
+            // Note that we're translating the scene in the reverse direction of where we want to move.
+            view = Matrix4.CreateTranslation(0.0f, 0.0f, -3.0f);
+            //projection matrix to perspective
+            projection = Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(45.0f), screnwidth / screenheight, 0.1f, 100.0f);
+            
+            
             
             
 
@@ -112,6 +130,10 @@ namespace HelloTriangle
             texture.Use(TextureUnit.Texture0);
             texture2.Use(TextureUnit.Texture1);
             shader.Use();
+
+            shader.SetMatrix4("model", model);
+            shader.SetMatrix4("view", view);
+            shader.SetMatrix4("projection", projection);
             
             // update color via uniform
             //int vertexColorLocation = shader.GetUniformLocation("rectangleColor");
