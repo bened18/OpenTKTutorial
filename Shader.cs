@@ -1,4 +1,5 @@
 using OpenTK.Graphics.OpenGL4;
+using OpenTK.Mathematics;
 
 namespace HelloTriangle
 {
@@ -79,6 +80,12 @@ namespace HelloTriangle
         {
             int location = GL.GetUniformLocation(Handle, name);
             GL.Uniform1(location, value);
+        }
+
+        public void SetMatrix4(string uniformName, Matrix4 matrix)
+        {
+            int location = GetUniformLocation(uniformName);
+            GL.UniformMatrix4(location, true, ref matrix);
         }
 
         //Clean up the handle aftes this class dies
