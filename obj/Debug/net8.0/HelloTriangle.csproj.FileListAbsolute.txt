@@ -32,3 +32,4 @@ C:\Users\bened\OneDrive\Documentos\Eafit\semestre 2024-2\computacion grafica\Ope
 C:\Users\bened\OneDrive\Documentos\Eafit\semestre 2024-2\computacion grafica\OpenTk\HelloTriangle\bin\Debug\net8.0\Resources\shader.frag
 C:\Users\bened\OneDrive\Documentos\Eafit\semestre 2024-2\computacion grafica\OpenTk\HelloTriangle\bin\Debug\net8.0\Resources\shader.vert
 C:\Users\bened\OneDrive\Documentos\Eafit\semestre 2024-2\computacion grafica\OpenTk\HelloTriangle\obj\Debug\net8.0\HelloTriangle.sourcelink.json
+C:\Users\bened\OneDrive\Documentos\Eafit\semestre 2024-2\computacion grafica\OpenTk\HelloTriangle\bin\Debug\net8.0\StbImageSharp.dll

@@ -75,6 +75,13 @@ namespace HelloTriangle
             return GL.GetUniformLocation(Handle, uniformName);
         }
 
+        public void SetInt(string name, int value)
+        {
+            int location = GL.GetUniformLocation(Handle, name);
+            Console.WriteLine("Texture:" + name + " with value: " + value+ " in location: " + location);
+            GL.Uniform1(location, value);
+        }
+
         //Clean up the handle aftes this class dies
         private bool disposedValue = false;
 
