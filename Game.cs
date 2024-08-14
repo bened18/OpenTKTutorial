@@ -23,13 +23,49 @@ namespace HelloTriangle
         }
 
         // -- Vertex Input
-        float[] vertices =
+        float[] vertices = 
         {
-            //Position          Texture coordinates
-            0.5f,  0.5f, 0.0f, 1.0f, 1.0f, // top right
-            0.5f, -0.5f, 0.0f, 1.0f, 0.0f, // bottom right
-            -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, // bottom left
-            -0.5f,  0.5f, 0.0f, 0.0f, 1.0f  // top left
+            -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+            0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
+            0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+            0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+            -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+            -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+
+            -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+            0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+            0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+            0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+            -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
+            -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+
+            -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+            -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+            -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+            -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+            -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+            -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+            0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+            0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+            0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+            0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+            0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+            0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+            -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+            0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
+            0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+            0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+            -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+            -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+
+            -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+            0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+            0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+            0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+            -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
+            -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
         };
         uint[] indices = 
         {  // note that we start from 0!
@@ -38,6 +74,7 @@ namespace HelloTriangle
         };
         int screnwidth;
         int screenheight;
+        double time;
         int vbo;
         int vao;
         int ebo;
@@ -105,13 +142,13 @@ namespace HelloTriangle
             //shader.SetMatrix4("transform", trans);
 
             // -- Transformation
-            model = Matrix4.CreateRotationX(MathHelper.DegreesToRadians(-55.0f));
             // Note that we're translating the scene in the reverse direction of where we want to move.
             view = Matrix4.CreateTranslation(0.0f, 0.0f, -3.0f);
             //projection matrix to perspective
             projection = Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(45.0f), screnwidth / screenheight, 0.1f, 100.0f);
             
-            
+            // Z-buffer
+            GL.Enable(EnableCap.DepthTest);
             
             
 
@@ -121,7 +158,9 @@ namespace HelloTriangle
         {
             base.OnRenderFrame(e);
 
-            GL.Clear(ClearBufferMask.ColorBufferBit);
+            time += 32.0 * e.Time;
+
+            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
             //Bind the vao
             GL.BindVertexArray(vao);
@@ -130,6 +169,8 @@ namespace HelloTriangle
             texture.Use(TextureUnit.Texture0);
             texture2.Use(TextureUnit.Texture1);
             shader.Use();
+
+            model = Matrix4.CreateRotationX((float)MathHelper.DegreesToRadians(time));
 
             shader.SetMatrix4("model", model);
             shader.SetMatrix4("view", view);
@@ -145,8 +186,10 @@ namespace HelloTriangle
             //GL.DrawArrays(PrimitiveType.Triangles, 0, 3);
 
             //Draw Rectangles
-            GL.DrawElements(PrimitiveType.Triangles, indices.Length, DrawElementsType.UnsignedInt, 0);
-
+            //GL.DrawElements(PrimitiveType.Triangles, indices.Length, DrawElementsType.UnsignedInt, 0);
+            
+            //Draw Cube
+            GL.DrawArrays(PrimitiveType.Triangles, 0, 36);
 
             SwapBuffers();
         }
