@@ -24,7 +24,6 @@ namespace HelloTriangle
         public void Use(TextureUnit unit = TextureUnit.Texture0)
         {
             GL.ActiveTexture(unit);
-            Console.WriteLine("Textura activa en la unidad: " + unit);
             GL.BindTexture(TextureTarget.Texture2D, Handle);
         }
     }

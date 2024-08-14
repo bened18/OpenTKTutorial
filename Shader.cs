@@ -78,7 +78,6 @@ namespace HelloTriangle
         public void SetInt(string name, int value)
         {
             int location = GL.GetUniformLocation(Handle, name);
-            Console.WriteLine("Texture:" + name + " with value: " + value+ " in location: " + location);
             GL.Uniform1(location, value);
         }
 
