@@ -19,12 +19,19 @@ namespace HelloTriangle
         // -- Vertex Input
         float[] vertices = 
         {
-            -0.5f, -0.5f, 0.0f, //Bottom-left vertex
-            0.5f, -0.5f, 0.0f, //Bottom-right vertex
-            0.0f,  0.5f, 0.0f  //Top vertex
+            0.5f,  0.5f, 0.0f,  // top right
+            0.5f, -0.5f, 0.0f,  // bottom right
+            -0.5f, -0.5f, 0.0f,  // bottom left
+            -0.5f,  0.5f, 0.0f   // top left
+        };
+        uint[] indices = 
+        {  // note that we start from 0!
+            0, 1, 3,   // first triangle
+            1, 2, 3    // second triangle
         };
         int vbo;
         int vao;
+        int ebo;
         Shader shader;
 
         protected override void OnLoad()
@@ -34,16 +41,22 @@ namespace HelloTriangle
             GL.ClearColor(0.2f, 0.3f, 0.3f, 1.0f);
             //creating the shader program
             shader = new Shader("Resources/shader.vert", "Resources/shader.frag");
-            // Vertex Buffer Object
+            // Vertex Buffer Object VBO
             vbo = GL.GenBuffer();
             GL.BindBuffer(BufferTarget.ArrayBuffer, vbo);
             GL.BufferData(BufferTarget.ArrayBuffer, vertices.Length * sizeof(float), vertices, BufferUsageHint.StaticDraw);
-            //creating Vertex Array Object and bound it
+            //creating Vertex Array Object and bound it VAO
             vao = GL.GenVertexArray();
             GL.BindVertexArray(vao);
             //tell OpenGl how interpret vertex data
             GL.VertexAttribPointer(shader.GetAttribLocation("aPosition"), 3, VertexAttribPointerType.Float, false, 3 * sizeof(float), 0);
             GL.EnableVertexAttribArray(0);
+            // Element Buffer Object EBO
+            ebo = GL.GenBuffer();
+            GL.BindBuffer(BufferTarget.ElementArrayBuffer, ebo);
+            GL.BufferData(BufferTarget.ElementArrayBuffer, indices.Length * sizeof(uint), indices, BufferUsageHint.StaticDraw);
+            
+            
 
         
         }
@@ -57,7 +70,8 @@ namespace HelloTriangle
             //Code goes here
             shader.Use();
             GL.BindVertexArray(vao);
-            GL.DrawArrays(PrimitiveType.Triangles, 0, 3);
+            //GL.DrawArrays(PrimitiveType.Triangles, 0, 3);
+            GL.DrawElements(PrimitiveType.Triangles, indices.Length, DrawElementsType.UnsignedInt, 0);
 
 
             SwapBuffers();
