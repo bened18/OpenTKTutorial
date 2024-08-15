@@ -92,6 +92,8 @@ namespace HelloTriangle
         double yaw;
         double pitch;
         bool firstMove = true;
+        float fov = 45.0f;
+        float value = 30.0f;
         
 
 
@@ -187,7 +189,7 @@ namespace HelloTriangle
 
             model = Matrix4.CreateRotationX((float)MathHelper.DegreesToRadians(time));
             //projection matrix to perspective
-            projection = Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(45.0f), screenwidth / screenheight, 0.1f, 100.0f);
+            projection = Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(fov), screenwidth / screenheight, 0.1f, 100.0f);
             // Setting up the camera
             // Look at
             view = Matrix4.LookAt(position, position + front, up);
@@ -320,6 +322,27 @@ namespace HelloTriangle
 
 
         } 
+
+        protected override void OnMouseWheel(MouseWheelEventArgs e)
+        {
+            base.OnMouseWheel(e);
+            value -= e.OffsetY; 
+            if (value >= 45.0f)
+            {
+                fov = 45.0f;
+                value = 44.0f;
+            }
+            else if (value <= 1.0f)
+            {
+                fov = 1.0f;
+                value = 2.0f;
+            }
+            else
+            {
+               fov -= e.OffsetY;
+            }
+        }
+
 
     }
 }
