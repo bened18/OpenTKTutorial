@@ -72,6 +72,11 @@ namespace HelloTriangle
             0, 1, 3,   // first triangle
             1, 2, 3    // second triangle
         };
+
+        float speed = 1.5f;
+        Vector3 position = new Vector3(0.0f, 0.0f,  3.0f);
+        Vector3 front = new Vector3(0.0f, 0.0f, -1.0f);
+        Vector3 up = new Vector3(0.0f, 1.0f,  0.0f);
         int screnwidth;
         int screenheight;
         double time;
@@ -143,9 +148,11 @@ namespace HelloTriangle
 
             // -- Transformation
             // Note that we're translating the scene in the reverse direction of where we want to move.
-            view = Matrix4.CreateTranslation(0.0f, 0.0f, -3.0f);
+            //view = Matrix4.CreateTranslation(0.0f, 0.0f, -3.0f);
             //projection matrix to perspective
             projection = Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(45.0f), screnwidth / screenheight, 0.1f, 100.0f);
+
+            
             
             // Z-buffer
             GL.Enable(EnableCap.DepthTest);
@@ -171,6 +178,9 @@ namespace HelloTriangle
             shader.Use();
 
             model = Matrix4.CreateRotationX((float)MathHelper.DegreesToRadians(time));
+            // Setting up the camera
+            // Look at
+            view = Matrix4.LookAt(position, position + front, up);
 
             shader.SetMatrix4("model", model);
             shader.SetMatrix4("view", view);
@@ -217,10 +227,47 @@ namespace HelloTriangle
         {
             base.OnUpdateFrame(e);
 
-            if (KeyboardState.IsKeyDown(Keys.Escape))
+            if (!IsFocused) // check to see if the window is focused
+            {
+                return;
+            }
+
+            KeyboardState input = KeyboardState;
+
+            if (input.IsKeyDown(Keys.Escape))
             {
                 Close();
             }
+
+            if (input.IsKeyDown(Keys.W))
+            {
+                position += front * speed * (float)e.Time; //Forward 
+            }
+
+            if (input.IsKeyDown(Keys.S))
+            {
+                position -= front * speed * (float)e.Time; //Backwards
+            }
+
+            if (input.IsKeyDown(Keys.A))
+            {
+                position -= Vector3.Normalize(Vector3.Cross(front, up)) * speed * (float)e.Time; //Left
+            }
+
+            if (input.IsKeyDown(Keys.D))
+            {
+                position += Vector3.Normalize(Vector3.Cross(front, up)) * speed * (float)e.Time; //Right
+            }
+
+            if (input.IsKeyDown(Keys.Space))
+            {
+                position += up * speed * (float)e.Time; //Up 
+            }
+
+            if (input.IsKeyDown(Keys.LeftShift))
+            {
+                position -= up * speed * (float)e.Time; //Down
+            } 
         }
 
 
