@@ -18,7 +18,7 @@ namespace HelloTriangle
                 ClientSize = (width, height), Title = title
             }
         ){
-            screnwidth = width;
+            screenwidth = width;
             screenheight = height;
         }
 
@@ -73,11 +73,10 @@ namespace HelloTriangle
             1, 2, 3    // second triangle
         };
 
-        float speed = 1.5f;
-        Vector3 position = new Vector3(0.0f, 0.0f,  3.0f);
-        Vector3 front = new Vector3(0.0f, 0.0f, -1.0f);
-        Vector3 up = new Vector3(0.0f, 1.0f,  0.0f);
-        int screnwidth;
+        Vector3 position;
+        Vector3 front;
+        Vector3 up;
+        int screenwidth;
         int screenheight;
         double time;
         int vbo;
@@ -89,6 +88,11 @@ namespace HelloTriangle
         Matrix4 model;
         Matrix4 view;
         Matrix4 projection;
+        Vector2 lastPos;
+        double yaw;
+        double pitch;
+        bool firstMove = true;
+        
 
 
         protected override void OnLoad()
@@ -149,10 +153,14 @@ namespace HelloTriangle
             // -- Transformation
             // Note that we're translating the scene in the reverse direction of where we want to move.
             //view = Matrix4.CreateTranslation(0.0f, 0.0f, -3.0f);
-            //projection matrix to perspective
-            projection = Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(45.0f), screnwidth / screenheight, 0.1f, 100.0f);
 
+            position = new Vector3(0.0f, 0.0f,  3.0f);
+            front = new Vector3(0.0f, 0.0f, -1.0f);
+            up = new Vector3(0.0f, 1.0f,  0.0f);
             
+
+            // Static Cursor
+            CursorState = CursorState.Grabbed;
             
             // Z-buffer
             GL.Enable(EnableCap.DepthTest);
@@ -178,6 +186,8 @@ namespace HelloTriangle
             shader.Use();
 
             model = Matrix4.CreateRotationX((float)MathHelper.DegreesToRadians(time));
+            //projection matrix to perspective
+            projection = Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(45.0f), screenwidth / screenheight, 0.1f, 100.0f);
             // Setting up the camera
             // Look at
             view = Matrix4.LookAt(position, position + front, up);
@@ -189,8 +199,6 @@ namespace HelloTriangle
             // update color via uniform
             //int vertexColorLocation = shader.GetUniformLocation("rectangleColor");
             //GL.Uniform4(vertexColorLocation, 0.2f, 0.0f, 1.0f, 1.0f);
-
-            
 
             //Draw the triangles
             //GL.DrawArrays(PrimitiveType.Triangles, 0, 3);
@@ -239,6 +247,9 @@ namespace HelloTriangle
                 Close();
             }
 
+            float speed = 1.5f;
+            float sensitivity = 0.3f;
+
             if (input.IsKeyDown(Keys.W))
             {
                 position += front * speed * (float)e.Time; //Forward 
@@ -268,8 +279,47 @@ namespace HelloTriangle
             {
                 position -= up * speed * (float)e.Time; //Down
             } 
-        }
 
+
+            // Get the mouse state
+            var mouse = MouseState;
+
+            if(firstMove) // this bool variable is initially set to true
+            {
+                lastPos = new Vector2(mouse.X, mouse.Y);
+                firstMove = false;
+            }
+            else if (IsFocused)
+            {
+                float deltaX = mouse.X - lastPos.X;
+                float deltaY = mouse.Y - lastPos.Y;
+                lastPos = new Vector2(mouse.X, mouse.Y);
+
+                yaw += deltaX * sensitivity;
+                pitch -= deltaY * sensitivity;
+
+                if(pitch > 89.0f)
+                {
+                    pitch = 89.0f;
+                }
+                else if(pitch < -89.0f)
+                {
+                    pitch = -89.0f;
+                }
+                else
+                {
+                    pitch -= deltaX * sensitivity;
+                }
+            }
+            
+        
+            front.X = (float)Math.Cos(MathHelper.DegreesToRadians(pitch)) * (float)Math.Cos(MathHelper.DegreesToRadians(yaw));
+            front.Y = (float)Math.Sin(MathHelper.DegreesToRadians(pitch));
+            front.Z = (float)Math.Cos(MathHelper.DegreesToRadians(pitch)) * (float)Math.Sin(MathHelper.DegreesToRadians(yaw));
+            front = Vector3.Normalize(front);
+
+
+        } 
 
     }
 }
